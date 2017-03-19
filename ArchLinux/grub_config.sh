@@ -12,9 +12,15 @@ GRUB_DIR="/boot/grub/"
 GRUB_CONFIG_FILE="${GRUB_DIR}grub.cfg"
 GRUB_CONFIG_FILE_NEW="${GRUB_CONFIG_FILE}.${DATE}"
 
+# set to 0 to disable logging
 LOGGING=1
 LOG_DIR="/var/log/nha/"
 LOG_FILE="${LOG_DIR}grub_config.log"
+
+SUCCESS="${GREEN}SUCCESS${NOCOLOR}: "
+FAILURE="${RED}FAILURE${NOCOLOR}: "
+GRUB_CONFIG_FILE_Y="${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR}"
+ABORTING="${RED}Aborting${NOCOLOR}."
 
 function check_log_dir {
 	if [ ! -d $LOG_DIR ]
@@ -34,34 +40,64 @@ function check_log_file {
 	fi
 }
 
+function output {
+	if [ $LOGGING -eq 1 ]
+	then
+		echo -e "$(date +"%Y-%m-%d %T") ${1}" >> $LOG_FILE
+	fi
 
-# if file exists and is regular file
-if [ -f $GRUB_CONFIG_FILE ]
-then
-	echo -e "Backing up current ${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR} to ${YELLOW}${GRUB_CONFIG_FILE_NEW}${NOCOLOR}"
+	echo -e "${1}"
+}
+
+function backup_grub_config_file {
+	output "Backing up current ${GRUB_CONFIG_FILE_Y} to ${YELLOW}${GRUB_CONFIG_FILE_NEW}${NOCOLOR}"
 
 	# just copying a file, moving on
-	cp $GRUB_CONFIG_FILE $GRUB_CONFIG_FILE_NEW
+	cp ${GRUB_CONFIG_FILE} ${GRUB_CONFIG_FILE_NEW}
+
+	if [ $? -eq 0 ]
+	then
+		output "${SUCCESS}${GRUB_CONFIG_FILE_Y} has been successfully backed up."
+	else
+		output "${FAILURE}${GRUB_CONFIG_FILE_Y} could not be backed up. ${ABORTING}"
+		exit
+	fi
 
 	# just adding some whitespace
 	echo ""
+	# list all the grub config files
 	ls -lht $GRUB_CONFIG_FILE*
 	# adding more whitespace
 	echo ""
-	
-	echo -e "Creating a new ${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR}"
+}
+
+function generate_grub_config_file {
+	output "Creating a new ${GRUB_CONFIG_FILE_Y}"
 
 	# silently generate new grub config
-	grub-mkconfig > $GRUB_CONFIG_FILE &>/dev/null
+	grub-mkconfig > ${GRUB_CONFIG_FILE} 2>/dev/null
 
 	# check last command exit status to see if it failed or not
 	if [ $? -eq 0 ]
 	then
-		echo -e "${GREEN}SUCCESS${NOCOLOR}: ${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR} has been successfully generated."
+		output "${SUCCESS}${GRUB_CONFIG_FILE_Y} has been successfully generated."
 	else
-		echo -e "${RED}FAILURE${NOCOLOR}: ${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR} could not be generated."
+		output "${FAILURE}${GRUB_CONFIG_FILE_Y} could not be generated. ${ABORTING}"
+		exit
 	fi
-else
-	echo -e "${RED}ERROR${NOCOLOR}: ${YELLOW}${GRUB_CONFIG_FILE}${NOCOLOR} does not exist! ${RED}Aborting${NOCOLOR}."
-fi
+}
 
+function main {
+	check_log_dir
+	check_log_file
+
+	if [ -f $GRUB_CONFIG_FILE ]
+	then
+		backup_grub_config_file
+		generate_grub_config_file
+	else
+		output "${FAILURE}${GRUB_CONFIG_FILE_Y} does not exist! ${ABORTING}"
+	fi
+}
+
+main
