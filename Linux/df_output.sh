@@ -108,6 +108,7 @@ then
 elif [ $SI -eq 1 ]
 then
 	DO="df -H"
+	echo -e "Did you know there are 1024 bytes in a kilobyte? ${RED}ACT LIKE IT ${NOCOLOR}"
 fi
 
 if [ $VERBOSE -eq 1 ]
