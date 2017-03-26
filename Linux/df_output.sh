@@ -28,11 +28,11 @@ then
 	exit 0
 fi
 
-# parses options -m, -d, and -c with arguments
+# parses options -o and -t with arguments
 #   if an argument to these options is provided it will be placed in OPTARG
 #   if no argument is provided getopts will set opt to : so we can catch
 #   this as an error
-# and options -v and -h without arguments
+# and options -H, -h, and -v without arguments
 while getopts ":Hhvo:t:" opt
 do
 	case ${opt} in
