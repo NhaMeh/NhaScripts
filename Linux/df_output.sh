@@ -53,6 +53,7 @@ do
 			;;
 		: )
 			echo -e "${RED}Error${NOCOLOR}: option ${YELLOW}${1}${NOCOLOR} requires arguments."
+			exit 1
 			;;
 	esac
 done
