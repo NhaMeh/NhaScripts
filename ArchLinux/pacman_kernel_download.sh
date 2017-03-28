@@ -52,6 +52,9 @@ function main {
 		check_log_file
 	fi
 
+	# update the repos, otherwise an older version might creep in and get 404's
+	pacman -Syy
+
 	for PKG in "${ARRAY[@]}"
 	do
 		PKG_NAME="$(pacman -Ss ${PKG} | sed -n '1p' | awk -F '/' '{print $2}' | awk '{print $1}')"
