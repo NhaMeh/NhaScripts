@@ -53,7 +53,7 @@ function main {
 	fi
 
 	# update the repos, otherwise an older version might creep in and get 404's
-	pacman -Syy
+	pacman -Syy &>/dev/null
 
 	for PKG in "${ARRAY[@]}"
 	do
