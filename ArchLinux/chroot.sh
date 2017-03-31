@@ -17,7 +17,6 @@ PROC_MNT=0
 SYS_MNT=0
 TMP_MNT=0
 
-
 # associative array (2D array; hash)
 declare -A MOUNTS=(
 	[dev]="${CHROOT_DIR}/dev"
