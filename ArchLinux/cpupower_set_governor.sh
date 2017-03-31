@@ -20,6 +20,7 @@ then
 		# powersave
 		[Pp][Oo][Ww][Ee][Rr][Ss][Aa][Vv][Ee] )
 			GOVERNOR="powersave" ;;
+		# performance
 		[Pp][Ee][Rr][Ff][Oo][Rr][Mm][Aa][Nn][Cc][Ee] )
 			GOVERNOR="performance" ;;
 		* )
