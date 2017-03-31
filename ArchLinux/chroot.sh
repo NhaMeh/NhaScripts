@@ -275,6 +275,13 @@ function mount_rest {
 	done
 }
 
+# check if root
+if [ "$EUID" -ne 0 ]
+then
+	output_error "we're not ${YELLOW}root${NOCOLOR}!"
+	exit 1
+fi
+
 check_chroot_dir
 mount_root
 mount_boot
