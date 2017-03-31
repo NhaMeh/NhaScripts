@@ -3,7 +3,6 @@
 # colors. yea.
 RED='\033[0;31m'
 YELLOW='\033[93m'
-GREEN='\033[92m'
 NOCOLOR='\033[0m'
 
 CHROOT_DIR="/mnt/meh/chroot"
@@ -35,10 +34,6 @@ function output_error {
 	output "${RED}ERROR${NOCOLOR}: ${1}"
 }
 
-function output_success {
-	output "${GREEN}SUCCESS${NOCOLOR}: ${1}"
-}
-
 function cleanup {
 	# unmount boot and root at the end, so the others are umounted as cleanly
 	# as possible; if seperate boot, unmount it before root
@@ -53,7 +48,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 
@@ -68,7 +63,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 
@@ -83,7 +78,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 
@@ -98,7 +93,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 
@@ -113,7 +108,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 
@@ -128,7 +123,7 @@ function cleanup {
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
-			umount $C_MP -l #&>/dev/null
+			umount $C_MP -l
 		fi
 	fi
 }
