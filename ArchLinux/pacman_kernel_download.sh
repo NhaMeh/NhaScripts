@@ -45,48 +45,44 @@ function output {
 	echo -e "${1}"
 }
 
-function main {
-	if [ $LOGGING -eq 1 ]
+if [ $LOGGING -eq 1 ]
+then
+	check_log_dir
+	check_log_file
+fi
+
+# update the repos, otherwise an older version might creep in and get 404's
+output "Updating repositories."
+pacman -Syy &>/dev/null
+
+for PKG in "${ARRAY[@]}"
+do
+	PKG_NAME="$(pacman -Ss ${PKG} | sed -n '1p' | awk -F '/' '{print $2}' | awk '{print $1}')"
+	PKG_VER="$(pacman -Ss ${PKG} | sed -n '1p' | awk '{print $2}')"
+	PKG_DIR="${DL_DIR}${PKG_NAME}/${PKG_VER}/"
+	PKG_FILE_NAME="${PKG_NAME}-${PKG_VER}-x86_64.pkg.tar.xz"
+	PKG_FILE="${PKG_DIR}${PKG_FILE_NAME}"
+	PKG_Y="${YELLOW}${PKG_NAME} ${PKG_VER}${NOCOLOR}"
+	PKG_FILE_Y="${YELLOW}${PKG_FILE_NAME}${NOCOLOR}"
+
+	if [ ! -d $PKG_DIR ]
 	then
-		check_log_dir
-		check_log_file
+		mkdir -p $PKG_DIR
 	fi
 
-	# update the repos, otherwise an older version might creep in and get 404's
-	output "Updating repositories."
-	pacman -Syy &>/dev/null
+	if [ ! -f $PKG_FILE ]
+	then
+		output "Downloading ${PKG_Y}."
 
-	for PKG in "${ARRAY[@]}"
-	do
-		PKG_NAME="$(pacman -Ss ${PKG} | sed -n '1p' | awk -F '/' '{print $2}' | awk '{print $1}')"
-		PKG_VER="$(pacman -Ss ${PKG} | sed -n '1p' | awk '{print $2}')"
-		PKG_DIR="${DL_DIR}${PKG_NAME}/${PKG_VER}/"
-		PKG_FILE_NAME="${PKG_NAME}-${PKG_VER}-x86_64.pkg.tar.xz"
-		PKG_FILE="${PKG_DIR}${PKG_FILE_NAME}"
-		PKG_Y="${YELLOW}${PKG_NAME} ${PKG_VER}${NOCOLOR}"
-		PKG_FILE_Y="${YELLOW}${PKG_FILE_NAME}${NOCOLOR}"
+		yes | pacman -Sw --cachedir $PKG_DIR $PKG
 
-		if [ ! -d $PKG_DIR ]
+		if [ $? -eq 0 ]
 		then
-			mkdir -p $PKG_DIR
-		fi
-
-		if [ ! -f $PKG_FILE ]
-		then
-			output "Downloading ${PKG_Y}."
-
-			yes | pacman -Sw --cachedir $PKG_DIR $PKG
-
-			if [ $? -eq 0 ]
-			then
-				output "${SUCCESS}${PKG_Y} was successfully downloaded."
-			else
-				output "${FAILURE}${PKG_Y} could not be downloaded."
-			fi
+			output "${SUCCESS}${PKG_Y} was successfully downloaded."
 		else
-			output "${SUCCESS}Skipping download, ${PKG_FILE_Y} already exists."
+			output "${FAILURE}${PKG_Y} could not be downloaded."
 		fi
-	done
-}
-
-main
+	else
+		output "${SUCCESS}Skipping download, ${PKG_FILE_Y} already exists."
+	fi
+done

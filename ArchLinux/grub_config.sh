@@ -87,17 +87,14 @@ function generate_grub_config_file {
 	fi
 }
 
-function main {
-	check_log_dir
-	check_log_file
+check_log_dir
+check_log_file
 
-	if [ -f $GRUB_CONFIG_FILE ]
-	then
-		backup_grub_config_file
-		generate_grub_config_file
-	else
-		output "${FAILURE}${GRUB_CONFIG_FILE_Y} does not exist! ${ABORTING}"
-	fi
-}
-
-main
+if [ -f $GRUB_CONFIG_FILE ]
+then
+	backup_grub_config_file
+	generate_grub_config_file
+else
+	output "${FAILURE}${GRUB_CONFIG_FILE_Y} does not exist! ${ABORTING}"
+	exit 1
+fi
