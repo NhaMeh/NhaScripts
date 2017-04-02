@@ -4,9 +4,27 @@
 RED='\033[0;31m'
 YELLOW='\033[93m'
 NOCOLOR='\033[0m'
+blockdevice=0
 
-CHROOT_DIR="/mnt/meh/chroot"
-ROOT_DEVICE="/dev/sdc1"
+while [ ! -d "$CHROOT_DIR" ]; do
+	read -p "What will your CHROOT mountpoint be on this system? " CHROOT_DIR
+	if [ ! -d "$CHROOT_DIR" ]; then
+		echo "Thats Not really a directory..."
+	fi
+done
+
+echo $blockdevice
+
+while [ $blockdevice -eq 0 ]; do
+	read -p "What is your root device you want to chroot into? (partition or logical volume) " ROOT_DEVICE
+	lsblk "$ROOT_DEVICE" > /dev/null 
+	if [ $? -eq 0 ]; then
+		blockdevice=1
+	else
+		echo "Thats not really a blockdevice..."
+		blockdevice=0
+	fi
+done
 BOOT_DEVICE=""
 
 # variables for tracking what we've mounted
