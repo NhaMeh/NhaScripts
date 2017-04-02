@@ -13,11 +13,9 @@ while [ ! -d "$CHROOT_DIR" ]; do
 	fi
 done
 
-echo $blockdevice
-
 while [ $blockdevice -eq 0 ]; do
 	read -p "What is your root device you want to chroot into? (partition or logical volume) " ROOT_DEVICE
-	lsblk "$ROOT_DEVICE" > /dev/null 
+	lsblk "$ROOT_DEVICE" > /dev/null
 	if [ $? -eq 0 ]; then
 		blockdevice=1
 	else
