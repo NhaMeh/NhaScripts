@@ -6,10 +6,18 @@ YELLOW='\033[93m'
 NOCOLOR='\033[0m'
 blockdevice=0
 
+function output {
+	echo -e "${1}"
+}
+
+function output_error {
+	output "${RED}ERROR${NOCOLOR}: ${1}"
+}
+
 while [ ! -d "$CHROOT_DIR" ]; do
 	read -p "What will your CHROOT mountpoint be on this system? " CHROOT_DIR
 	if [ ! -d "$CHROOT_DIR" ]; then
-		echo "Thats Not really a directory..."
+		output_error "Thats Not really a ${YELLOW}directory${NOCOLOR}..."
 	fi
 done
 
@@ -19,7 +27,7 @@ while [ $blockdevice -eq 0 ]; do
 	if [ $? -eq 0 ]; then
 		blockdevice=1
 	else
-		echo "Thats not really a blockdevice..."
+		output_error "Thats not really a ${YELLOW}blockdevice${NOCOLOR}..."
 		blockdevice=0
 	fi
 done
@@ -41,14 +49,6 @@ declare -A MOUNTS=(
 	[tmp]="${CHROOT_DIR}/tmp"
 )
 
-function output {
-	echo -e "${1}"
-}
-
-function output_error {
-	output "${RED}ERROR${NOCOLOR}: ${1}"
-}
-
 function cleanup {
 	# unmount boot and root at the end, so the others are umounted as cleanly
 	# as possible; if seperate boot, unmount it before root
@@ -59,7 +59,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -74,7 +74,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -89,7 +89,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -104,7 +104,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -119,7 +119,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -134,7 +134,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -145,7 +145,7 @@ function cleanup {
 
 function check_chroot_dir {
 	if [ ! -d $CHROOT_DIR ]
-	then 
+	then
 		# make the dir
 		mkdir -p $CHROOT_DIR
 	fi
