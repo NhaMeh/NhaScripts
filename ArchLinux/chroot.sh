@@ -6,7 +6,7 @@ YELLOW='\033[93m'
 NOCOLOR='\033[0m'
 
 CHROOT_DIR="/mnt/meh/chroot"
-ROOT_DEVICE="/dev/sdc1"
+ROOT_DEVICE="/dev/sdx1"
 BOOT_DEVICE=""
 
 # variables for tracking what we've mounted
@@ -142,6 +142,15 @@ function check_chroot_dir {
 }
 
 function mount_root {
+	# check if valid block device
+	lsblk $ROOT_DEVICE &> /dev/null
+
+	if [ ! $? -eq 0 ]
+	then
+		output_error "not a valid block device: ${YELLOW}${ROOT_DEVICE}${NOCOLOR}"
+		exit 1
+	fi
+
 	output "Mounting root device ${YELLOW}${ROOT_DEVICE}${NOCOLOR}."
 	mount $ROOT_DEVICE $CHROOT_DIR &>/dev/null
 
