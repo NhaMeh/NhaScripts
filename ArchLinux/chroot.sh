@@ -4,9 +4,33 @@
 RED='\033[0;31m'
 YELLOW='\033[93m'
 NOCOLOR='\033[0m'
+blockdevice=0
 
-CHROOT_DIR="/mnt/meh/chroot"
-ROOT_DEVICE="/dev/sdc1"
+function output {
+	echo -e "${1}"
+}
+
+function output_error {
+	output "${RED}ERROR${NOCOLOR}: ${1}"
+}
+
+while [ ! -d "$CHROOT_DIR" ]; do
+	read -p "What will your CHROOT mountpoint be on this system? " CHROOT_DIR
+	if [ ! -d "$CHROOT_DIR" ]; then
+		output_error "Thats Not really a ${YELLOW}directory${NOCOLOR}..."
+	fi
+done
+
+while [ $blockdevice -eq 0 ]; do
+	read -p "What is your root device you want to chroot into? (partition or logical volume) " ROOT_DEVICE
+	lsblk "$ROOT_DEVICE" > /dev/null
+	if [ $? -eq 0 ]; then
+		blockdevice=1
+	else
+		output_error "Thats not really a ${YELLOW}blockdevice${NOCOLOR}..."
+		blockdevice=0
+	fi
+done
 BOOT_DEVICE=""
 
 # variables for tracking what we've mounted
@@ -25,14 +49,6 @@ declare -A MOUNTS=(
 	[tmp]="${CHROOT_DIR}/tmp"
 )
 
-function output {
-	echo -e "${1}"
-}
-
-function output_error {
-	output "${RED}ERROR${NOCOLOR}: ${1}"
-}
-
 function cleanup {
 	# unmount boot and root at the end, so the others are umounted as cleanly
 	# as possible; if seperate boot, unmount it before root
@@ -43,7 +59,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -58,7 +74,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -73,7 +89,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -88,7 +104,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -103,7 +119,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -118,7 +134,7 @@ function cleanup {
 
 		output "Unmounting ${Y_MP}"
 		umount $C_MP &>/dev/null
-	
+
 		if [ ! $? -eq 0 ]
 		then
 			output "Unmounting ${Y_MP} lazily"
@@ -129,7 +145,7 @@ function cleanup {
 
 function check_chroot_dir {
 	if [ ! -d $CHROOT_DIR ]
-	then 
+	then
 		# make the dir
 		mkdir -p $CHROOT_DIR
 	fi
