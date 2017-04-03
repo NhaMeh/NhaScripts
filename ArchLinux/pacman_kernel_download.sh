@@ -1,6 +1,11 @@
 #!/bin/bash
 
-declare -a ARRAY=("linux-ck-sandybridge" "linux-ck-sandybridge-headers" "broadcom-wl-ck-sandybridge" "virtualbox-ck-host-modules-sandybridge")
+declare -a ARRAY=(
+	"linux-ck-sandybridge"
+	"linux-ck-sandybridge-headers"
+	"broadcom-wl-ck-sandybridge"
+	"virtualbox-ck-host-modules-sandybridge"
+)
 
 # colors. yea.
 RED='\033[0;31m'
